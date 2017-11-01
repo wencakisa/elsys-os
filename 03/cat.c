@@ -4,7 +4,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#define BUFF_SIZE 100
+#define BUFF_SIZE 10
 
 int main(int argc, char const *argv[]) {
     const char *filename = argv[1];
