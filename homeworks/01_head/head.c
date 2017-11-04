@@ -15,7 +15,7 @@ void print_filename(const char*);
 void head_file(int);
 
 int main(int argc, char const *argv[]) {
-    for (ssize_t i = 1; i < argc; i++) {
+    for (size_t i = 1; i < argc; i++) {
         const char *filename = argv[i];
 
         if (argc > ARGC_TO_PRINT_NAMES) {
@@ -62,12 +62,12 @@ void head_file(int fd) {
             exit(-1);
         }
 
-        for (size_t j = 0; j < rresult && lines < LINES_TO_READ; j++, wresult = 0) {
-            if (*(buffer + j) == '\n') {
+        for (size_t i = 0; i < rresult && lines < LINES_TO_READ; i++, wresult = 0) {
+            if (*(buffer + i) == '\n') {
                 lines++;
             }
 
-            ssize_t res = write(STDOUT_FILENO, buffer + j, 1);
+            ssize_t res = write(STDOUT_FILENO, buffer + i, 1);
             if (wresult < 0) {
                 perror("write");
                 exit(-1);

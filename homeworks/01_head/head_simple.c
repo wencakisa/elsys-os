@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -13,33 +12,17 @@ int main() {
 
     int fd = open(filename, O_RDONLY);
 
-    if (fd < 0) {
-        perror(filename);
-        return -1;
-    }
-
     char buffer[PIPE_BUF];
     size_t lines = 0;
-    ssize_t rresult, wresult;
+    ssize_t rresult;
 
     while ((rresult = read(fd, buffer, PIPE_BUF)) != 0) {
-        if (rresult < 0) {
-            perror("read");
-            return -1;
-        }
-
-        for (size_t j = 0; j < rresult && lines < LINES_TO_READ; j++, wresult = 0) {
-            if (*(buffer + j) == '\n') {
+        for (size_t i = 0; i < rresult && lines < LINES_TO_READ; i++) {
+            if (*(buffer + i) == '\n') {
                 lines++;
             }
 
-            ssize_t res = write(STDOUT_FILENO, buffer + j, 1);
-            if (wresult < 0) {
-                perror("write");
-                return -1;
-            }
-
-            wresult += res;
+            write(STDOUT_FILENO, buffer + i, 1);
         }
 
         if (lines == LINES_TO_READ) {
@@ -47,10 +30,7 @@ int main() {
         }
     }
 
-    if (close(fd) < 0) {
-        perror("close");
-        return -1;
-    }
+    close(fd);
 
     return 0;
 }
