@@ -23,6 +23,7 @@
 
 #define LINES_TO_READ 10
 #define ARGC_TO_PRINT_NAMES 2
+#define STDIN_AS_FILENAME "-"
 
 void print_filename_as_title(const char*);
 void read_from_stdin();
@@ -34,8 +35,13 @@ int main(int argc, char const *argv[]) {
     if (argc > 1) {
         size_t valid_filenames = 0;
 
-        for (size_t i = 1; i < argc; i++) {
+        for (int i = 1; i < argc; i++) {
             const char *filename = argv[i];
+
+            if (!strcmp(filename, STDIN_AS_FILENAME)) {
+                read_from_stdin();
+                continue;
+            }
 
             int fd = open(filename, O_RDONLY);
 
@@ -85,14 +91,8 @@ void print_filename_as_title(const char *filename) {
 // PARAMETERS: No parameters
 //------------------------------------------------------------------------
 void read_from_stdin() {
-    char buffer[PIPE_BUF];
-    ssize_t rresult;
-
-    while((rresult = read(STDIN_FILENO, buffer, PIPE_BUF)) != 0) {
-        if (rresult < 0) {
-            exit(-1);
-        }
-    }
+    offset_to_last_n_lines(STDIN_FILENO, LINES_TO_READ);
+    cat_file(STDIN_FILENO, STDIN_AS_FILENAME);
 }
 
 //------------------------------------------------------------------------
@@ -106,7 +106,7 @@ void read_from_stdin() {
 void offset_to_last_n_lines(int fd, int n) {
     off_t pos = lseek(fd, 0, SEEK_END);
     char ch;
-    size_t lines = 0;
+    int lines = 0;
 
     while (pos) {
         lseek(fd, --pos, SEEK_SET);
