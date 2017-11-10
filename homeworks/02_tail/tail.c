@@ -32,7 +32,7 @@ void tail_file(int, const char*);
 
 int main(int argc, char const *argv[]) {
     if (argc > 1) {
-        ssize_t valid_filenames = 0;
+        size_t valid_filenames = 0;
 
         for (size_t i = 1; i < argc; i++) {
             const char *filename = argv[i];
