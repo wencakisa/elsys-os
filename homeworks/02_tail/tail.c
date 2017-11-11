@@ -115,17 +115,18 @@ void offset_to_last_n_lines(int fd, int n) {
     int lines = 0;
 
     while (pos) {
-        // Move one bit backwards from the end
-        lseek(fd, --pos, SEEK_SET);
-        // Read this bit
-        read(fd, &ch, 1);
-
-        // If the just read bit is a newline character -> increment lines
-        if (ch == '\n') {
-            if (lines++ == n) {
-                break;
+        // Read the current bit bit
+        if (read(fd, &ch, 1) != 0) {
+            // If the bit is a newline character -> increment lines
+            if (ch == '\n') {
+                if (lines++ == n) {
+                    break;
+                }
             }
         }
+
+        // Move one bit backwards from the end
+        lseek(fd, --pos, SEEK_SET);
     }
 }
 
