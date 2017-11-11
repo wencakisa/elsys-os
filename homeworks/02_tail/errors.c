@@ -1,3 +1,10 @@
+//------------------------------------------------------------------------
+// FILE NAME: errors.c
+// FILE PURPOSE:
+// Provides more detailed error representation
+// for opening, reading and writing files
+//------------------------------------------------------------------------
+
 #include <stdio.h>
 #include <string.h>
 
@@ -6,6 +13,7 @@
 //------------------------------------------------------------------------
 // FUNCTION: print_full_error
 // Prints a fully described error message to STDERR
+//
 // PARAMETERS:
 // const char *before_filename -> information to be printed before filename
 // const char *filename        -> the filename that is causing the error
@@ -24,6 +32,7 @@ void print_full_error(const char *before_filename, const char *filename, const c
 //------------------------------------------------------------------------
 // FUNCTION: print_opening_error
 // Prints a opening error to STDERR
+//
 // PARAMETERS:
 // const char *filename -> the filename that is causing opening error
 //------------------------------------------------------------------------
@@ -34,6 +43,7 @@ void print_opening_error(const char *filename) {
 //------------------------------------------------------------------------
 // FUNCTION: print_reading_error
 // Prints a reading error to STDERR
+//
 // PARAMETERS:
 // const char *filename -> the filename that is causing reading error
 //------------------------------------------------------------------------
@@ -44,6 +54,7 @@ void print_reading_error(const char *filename) {
 //------------------------------------------------------------------------
 // FUNCTION: print_writing_error
 // Prints a writing error to STDERR
+//
 // PARAMETERS:
 // const char *filename -> the filename that is causing writing error
 //------------------------------------------------------------------------
