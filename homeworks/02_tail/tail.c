@@ -210,10 +210,8 @@ void tail_from_stdin() {
 
     // At first, read from STDIN and write to stdin_temp_fd
     cat_input_to_output(STDIN_FILENO, stdin_temp_fd, STDIN_TEMP_OUTPUT_FILENAME);
-    // Then offset stdin_temp_fd to the last <LINES_TO_READ> lines
-    offset_to_last_n_lines(stdin_temp_fd, LINES_TO_READ);
-    // Finally, read from stdin_temp_fd and write to STDOUT
-    cat_input_to_output(stdin_temp_fd, STDOUT_FILENO, STDIN_AS_FILENAME);
+    // Then tail stdin_temp_fd
+    tail_descriptor(stdin_temp_fd, STDIN_AS_FILENAME);
 
     // unlink() deletes a given filename, so we delete STDIN_TEMP_OUTPUT_FILENAME
     unlink(STDIN_TEMP_OUTPUT_FILENAME);
