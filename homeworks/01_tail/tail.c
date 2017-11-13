@@ -26,7 +26,7 @@
 #define STDIN_TEMP_OUTPUT_FILENAME "stdin_temp.txt"
 
 int is_stdin_filename(const char*);
-void print_filename_as_title(const char*);
+void print_pretty_filename(int, const char*);
 void offset_to_last_n_lines(int, int);
 void cat_input_to_output(int, int, const char*);
 void tail_descriptor(int, const char*);
@@ -54,11 +54,7 @@ int main(int argc, char const *argv[]) {
 
             valid_filenames++;
             if (argc > ARGC_TO_PRINT_NAMES) {
-                if (valid_filenames >= ARGC_TO_PRINT_NAMES) {
-                    write(STDOUT_FILENO, "\n", 1);
-                }
-
-                print_filename_as_title(filename);
+                print_pretty_filename((valid_filenames == 1), filename);
             }
 
             tail_descriptor(fd, filename);
@@ -87,13 +83,17 @@ int is_stdin_filename(const char *filename) {
 }
 
 //------------------------------------------------------------------------
-// FUNCTION: print_filename_as_title
+// FUNCTION: print_pretty_filename
 // Prints filename as a ==> title <===
 //
 // PARAMETERS:
-// const char *filename -> the filename to be printed as a title
+// const char *filename -> the filename to be pretty printed
 //------------------------------------------------------------------------
-void print_filename_as_title(const char *filename) {
+void print_pretty_filename(int is_first_file, const char *filename) {
+    if (!is_first_file) {
+        write(STDOUT_FILENO, "\n", 1);
+    }
+
     write(STDOUT_FILENO, "==> ", 4);
     write(STDOUT_FILENO, filename, strlen(filename));
     write(STDOUT_FILENO, " <==\n", 5);
