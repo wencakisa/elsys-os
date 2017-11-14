@@ -10,6 +10,7 @@
 // like write(), read(), open(), lseek()
 //------------------------------------------------------------------------
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -20,10 +21,12 @@
 // Error message representation functions
 #include "errors.h"
 
+#define MAX_TITLE_LEN 50
 #define LINES_TO_READ 10
 #define ARGC_TO_PRINT_NAMES 2
 #define STDIN_AS_FILENAME "-"
 #define STDIN_TEMP_OUTPUT_FILENAME "stdin_temp.txt"
+
 
 int is_stdin_filename(const char*);
 void print_pretty_filename(int, const char*);
@@ -90,13 +93,10 @@ int is_stdin_filename(const char *filename) {
 // const char *filename -> the filename to be pretty printed
 //------------------------------------------------------------------------
 void print_pretty_filename(int is_first_file, const char *filename) {
-    if (!is_first_file) {
-        write(STDOUT_FILENO, "\n", 1);
-    }
+    char title[MAX_TITLE_LEN];
+    sprintf(title, "%s==> %s <==\n",(is_first_file ? "" : "\n"), filename);
 
-    write(STDOUT_FILENO, "==> ", 4);
-    write(STDOUT_FILENO, filename, strlen(filename));
-    write(STDOUT_FILENO, " <==\n", 5);
+    write(STDOUT_FILENO, title, strlen(title));
 }
 
 //------------------------------------------------------------------------

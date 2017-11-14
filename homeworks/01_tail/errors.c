@@ -10,23 +10,21 @@
 
 #include "errors.h"
 
+#define MAX_ERR_MSG_LEN 1024
+#define ERROR_BEGIN "tail:"
+
 //------------------------------------------------------------------------
 // FUNCTION: print_full_error
 // Prints a fully described error message to STDERR
 //
 // PARAMETERS:
-// const char *before_filename -> information to be printed before filename
-// const char *filename        -> the filename that is causing the error
-// const char *after_filename  -> information to be printed after filename
+// const char *error_message -> the concrete error message
 //------------------------------------------------------------------------
-void print_full_error(const char *before_filename, const char *filename, const char *after_filename) {
-    char error_message[MAX_ERR_MSG_LEN];
-    strcpy(error_message, ERROR_BEGIN);
-    strcat(error_message, before_filename);
-    strcat(error_message, filename);
-    strcat(error_message, after_filename);
+void print_full_error(const char *error_message) {
+    char full_error_message[MAX_ERR_MSG_LEN];
+    sprintf(full_error_message, "%s %s", ERROR_BEGIN, error_message);
 
-    perror(error_message);
+    perror(full_error_message);
 }
 
 //------------------------------------------------------------------------
@@ -37,7 +35,25 @@ void print_full_error(const char *before_filename, const char *filename, const c
 // const char *filename -> the filename that is causing opening error
 //------------------------------------------------------------------------
 void print_opening_error(const char *filename) {
-    print_full_error("cannot open '", filename, "' for reading");
+    char error_message[MAX_ERR_MSG_LEN];
+    sprintf(error_message, "cannot open '%s' for reading", filename);
+
+    print_full_error(error_message);
+}
+
+//------------------------------------------------------------------------
+// FUNCTION: print_io_error
+// Prints either reading or writing error to STDERR
+//
+// PARAMETERS:
+// const char *operation - "reading" / "writing"
+// const char *filename  - the filename that is causing the IO error
+//------------------------------------------------------------------------
+void print_io_error(const char *operation, const char *filename) {
+    char error_message[MAX_ERR_MSG_LEN];
+    sprintf(error_message, "error %s '%s'", operation, filename);
+
+    print_full_error(error_message);
 }
 
 //------------------------------------------------------------------------
@@ -48,7 +64,7 @@ void print_opening_error(const char *filename) {
 // const char *filename -> the filename that is causing reading error
 //------------------------------------------------------------------------
 void print_reading_error(const char *filename) {
-    print_full_error("error reading '", filename, "'");
+    print_io_error("reading", filename);
 }
 
 //------------------------------------------------------------------------
@@ -59,5 +75,5 @@ void print_reading_error(const char *filename) {
 // const char *filename -> the filename that is causing writing error
 //------------------------------------------------------------------------
 void print_writing_error(const char *filename) {
-    print_full_error("error writing '", filename, "'");
+    print_io_error("writing", filename);
 }
