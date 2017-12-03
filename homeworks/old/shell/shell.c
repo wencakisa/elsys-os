@@ -23,10 +23,10 @@ int main() {
         printf("Filename: %s\n", filename);
         // write(STDOUT_FILENO, filename, strlen(filename));
 
-        for (size_t i = 1; i < sizeof(parsed_line) / sizeof(parsed_line[0]); i++) {
-            printf("bom\n");
-            write(STDOUT_FILENO, parsed_line[i], strlen(parsed_line[i]));
-        }
+        // for (size_t i = 1; i < sizeof(parsed_line) / sizeof(parsed_line[0]); i++) {
+        //     printf("bom\n");
+        //     write(STDOUT_FILENO, parsed_line[i], strlen(parsed_line[i]));
+        // }
 
         free(parsed_line);
     }
@@ -35,6 +35,8 @@ int main() {
 }
 
 char** parse_cmdline(const char *cmdline) {
+    printf("%s\n", cmdline);
+
     char **result = (char**) calloc(strlen(cmdline), sizeof(char*));
 
     char *cmd_copy = (char*) calloc(strlen(cmdline) + 1, sizeof(char));
