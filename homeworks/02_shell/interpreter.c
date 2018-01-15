@@ -15,6 +15,8 @@ void run_command(char** command) {
 
     if (pid == 0) {
         // Child process
+
+        // execute the command
         execvp(command[0], command);
 
         // exec* will interrupt the child process
@@ -44,40 +46,59 @@ void close_pipe(int pipefd[2]) {
 }
 
 void run_piped_commands(char** current, char** next) {
+    // pipe file descriptors
     int pipefd[2];
 
+    // check if pipe() failed
     if (pipe(pipefd) == -1) {
         perror("pipe");
         exit(EXIT_FAILURE);
     }
 
+    // create a new process
     pid_t pid = fork();
 
     if (pid == 0) {
         // Child process
+
+        // duplicating STDOUT_FILENO to the write end of the pipe
         dup2(pipefd[WRITE_END], STDOUT_FILENO);
+        // closing both the read and write ends of the pipe,
+        // because we do not need them anymore
         close_pipe(pipefd);
 
+        // executing the first process
         execvp(current[0], current);
 
+        // exec*() failed
         perror(current[0]);
         free_string_array(current);
         _exit(EXIT_FAILURE);
     } else if (pid > 0) {
-        // Create second child process
+        // Parent process
+
+        // create second child process
         pid = fork();
 
         if (pid == 0) {
+            // child process of the new child
+
+            // duplicating STDIN_FILENO to the read end of our pipe
             dup2(pipefd[READ_END], STDIN_FILENO);
             close_pipe(pipefd);
 
+            // executing the next process
             execvp(next[0], next);
 
             perror(next[0]);
             free_string_array(next);
             _exit(EXIT_FAILURE);
         } else if (pid > 0) {
+            // parent process of the new child
+
+            // closing the pipe
             close_pipe(pipefd);
+            // waiting for the child to finish its work
             waitpid(pid, NULL, 0);
         } else {
             perror("fork");
