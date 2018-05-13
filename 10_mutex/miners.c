@@ -23,7 +23,7 @@ pthread_mutex_t mutex;
 long gold = 0;
 
 void* miner(void* arg) {
-    int id = (int) arg;
+    int id = (intptr_t) arg;
 
     for (size_t i = 0; i < ACTIONS_PER_WORKER; i++) {
         pthread_mutex_lock(&mutex);
@@ -40,7 +40,7 @@ void* miner(void* arg) {
 }
 
 void* trader(void* arg) {
-    int id = (int) arg;
+    int id = (intptr_t) arg;
 
     for (size_t i = 0; i < ACTIONS_PER_WORKER; i++) {
         pthread_mutex_lock(&mutex);
