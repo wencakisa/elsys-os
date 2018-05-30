@@ -9,6 +9,10 @@
 
 #include "helpers.h"
 
+bool contains(const char* haystack, const char* needle) {
+    return strstr(haystack, needle) != NULL;
+}
+
 bool is_flag(const char* filename) {
     return filename[0] == '-';
 }
@@ -21,30 +25,30 @@ bool is_parent_or_current_dir(const char* filename) {
     return !strcmp(filename, ".") || !strcmp(filename, "..");
 }
 
+bool is_regular_file(mode_t mode) {
+    return S_ISREG(mode) != 0;
+}
+
 bool is_directory(mode_t mode) {
     return S_ISDIR(mode) != 0;
 }
 
 char get_mode_symbol(mode_t mode) {
-    char mode_symbol;
-
-    if (is_directory(mode)) {
-        mode_symbol = 'd';
+    if (is_regular_file(mode)) {
+        return '-';
+    } else if (is_directory(mode)) {
+        return 'd';
     } else if (S_ISCHR(mode)) {
-        mode_symbol = 'c';
+        return 'c';
     } else if (S_ISBLK(mode)) {
-        mode_symbol = 'b';
-    } else if (S_ISREG(mode)) {
-        mode_symbol = '-';
+        return 'b';
     } else if (S_ISFIFO(mode)) {
-        mode_symbol = 'p';
+        return 'p';
     } else if (S_ISLNK(mode)) {
-        mode_symbol = 'l';
+        return 'l';
     } else if (S_ISSOCK(mode)) {
-        mode_symbol = 's';
+        return 's';
     }
-
-    return mode_symbol;
 }
 
 char* get_owner_name(struct stat file_stat) {

@@ -5,11 +5,15 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+bool contains(const char* haystack, const char* needle);
+
 bool is_flag(const char* filename);
 
 bool is_hidden(const char* filename);
 
 bool is_parent_or_current_dir(const char* filename);
+
+bool is_regular_file(mode_t mode);
 
 bool is_directory(mode_t mode);
 

@@ -18,9 +18,9 @@ void init_flags(flags_t* flags_ptr) {
 }
 
 void process_flag(flags_t* flags_ptr, const char* flag_str) {
-    flags_ptr->full_info   = (strstr(flag_str, FULL_INFO_FLAG)   != NULL);
-    flags_ptr->show_hidden = (strstr(flag_str, SHOW_HIDDEN_FLAG) != NULL);
-    flags_ptr->recursive   = (strstr(flag_str, RECURSIVE_FLAG)   != NULL);
+    flags_ptr->full_info   = contains(flag_str, FULL_INFO_FLAG);
+    flags_ptr->show_hidden = contains(flag_str, SHOW_HIDDEN_FLAG);
+    flags_ptr->recursive   = contains(flag_str, RECURSIVE_FLAG);
 }
 
 void print_file_permissions(mode_t mode) {
@@ -41,7 +41,7 @@ void print_full_info(struct stat file_stat) {
     char timestamp[20];
     strftime(timestamp, 20, "%B %d %R", localtime(&file_stat.st_mtime));
 
-    printf(" %ld %10s %10s %5ld %10s", file_stat.st_nlink,
+    printf(" %ld %s %s %ld %s", file_stat.st_nlink,
                                 get_owner_name(file_stat),
                                 get_group_name(file_stat),
                                 file_stat.st_size,
@@ -54,9 +54,11 @@ blkcnt_t get_total_blocks_size(struct dirent** name_list, int files_count, const
     for (size_t i = 0; i < files_count; i++) {
         const char* current_name = name_list[i]->d_name;
 
-        const char* full_path = join_paths(base_filename, current_name);
+        char* full_path = join_paths(base_filename, current_name);
         struct stat current_file_stat;
         stat(full_path, &current_file_stat);
+
+        free(full_path);
 
         if (!flags.show_hidden) {
             if (is_hidden(current_name)) {
@@ -65,6 +67,7 @@ blkcnt_t get_total_blocks_size(struct dirent** name_list, int files_count, const
         }
 
         total_blocks_size += current_file_stat.st_blocks;
+
     }
 
     return total_blocks_size / 2;
@@ -90,7 +93,7 @@ void process_directory(const char* filename, flags_t flags) {
     struct dirent** name_list;
     int files_count = scandir(filename, &name_list, NULL, alphasort);
 
-    const char** directories = (const char**) malloc(sizeof(const char*) * files_count + 1);
+    char** directories = (char**) malloc(sizeof(char*) * files_count + 1);
     size_t directories_count = 0;
 
     blkcnt_t total_blocks_count;
@@ -128,6 +131,8 @@ void process_directory(const char* filename, flags_t flags) {
 
             if (is_directory_to_process) {
                 directories[directories_count++] = full_path;
+            } else {
+                free(full_path);
             }
 
             free(name_list[i]);
@@ -137,6 +142,7 @@ void process_directory(const char* filename, flags_t flags) {
         for(size_t i = 0; i < directories_count; i++) {
             printf("\n");
             process_directory(directories[i], flags);
+            free(directories[i]);
         }
 
         free(directories);
@@ -165,7 +171,6 @@ void ls(int size, const char* filenames[size]) {
         const char* filename = filenames[i];
 
         if (is_flag(filename)) {
-            flags_count++;
             process_flag(&flags, filename);
 
             if (size == 1) {
@@ -173,24 +178,31 @@ void ls(int size, const char* filenames[size]) {
                 process_current_directory(flags);
             }
         } else {
+            mode_t last_processed_mode;
+
             if (stat(filename, &file_stat) == 0) {
                 mode_t mode = file_stat.st_mode;
 
                 if (is_directory(mode)) {
                     flags.print_title = (size - flags_count > 1);
+
+                    if (is_regular_file(last_processed_mode)) {
+                        printf("\n");
+                    }
+
                     process_directory(filename, flags);
 
+                    if (flags.print_title && i < size - 1) {
+                        printf("\n");
+                    }
                 } else {
                     process_file(file_stat, filename, flags);
                 }
 
+                last_processed_mode = mode;
             } else {
                 print_error("ls: cannot access %s", filename);
             }
-        }
-
-        if (flags.print_title && i < size - 1) {
-            printf("\n");
         }
     }
 }
