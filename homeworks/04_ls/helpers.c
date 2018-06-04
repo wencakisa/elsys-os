@@ -14,11 +14,11 @@ bool contains(const char* haystack, const char* needle) {
 }
 
 bool is_flag(const char* filename) {
-    return filename[0] == '-';
+    return filename[0] == '-' && strlen(filename) > 1;
 }
 
 bool is_hidden(const char* filename) {
-    return filename[0] == '.';
+    return filename[0] == '.' || filename[strlen(filename) - 1] == '~';
 }
 
 bool is_parent_or_current_dir(const char* filename) {

@@ -60,10 +60,11 @@ blkcnt_t get_total_blocks_size(struct dirent** name_list, int files_count, const
 
         free(full_path);
 
-        if (!flags.show_hidden) {
-            if (is_hidden(current_name)) {
-                continue;
-            }
+        if (
+            (!flags.show_hidden && is_hidden(current_name)) ||
+            is_parent_or_current_dir(current_name)
+        ) {
+            continue;
         }
 
         total_blocks_size += current_file_stat.st_blocks;
@@ -74,10 +75,11 @@ blkcnt_t get_total_blocks_size(struct dirent** name_list, int files_count, const
 }
 
 void process_file(struct stat file_stat, const char* filename, flags_t flags) {
-    if (!flags.show_hidden) {
-        if (is_hidden(filename)) {
-            return;
-        }
+    if (
+        (!flags.show_hidden && is_hidden(filename)) ||
+        is_parent_or_current_dir(filename)
+    ) {
+        return;
     }
 
     printf("%c", get_mode_symbol(file_stat.st_mode));
@@ -171,6 +173,7 @@ void ls(int size, const char* filenames[size]) {
         const char* filename = filenames[i];
 
         if (is_flag(filename)) {
+            flags_count++;
             process_flag(&flags, filename);
 
             if (size == 1) {

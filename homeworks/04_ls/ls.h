@@ -9,7 +9,7 @@
 #define CURRENT_DIRECTORY "."
 
 #define FULL_INFO_FLAG    "l"
-#define SHOW_HIDDEN_FLAG  "a"
+#define SHOW_HIDDEN_FLAG  "A"
 #define RECURSIVE_FLAG    "R"
 
 typedef struct flags_t {

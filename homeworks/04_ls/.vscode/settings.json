@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "limits.h": "c",
-        "stat.h": "c"
+        "stat.h": "c",
+        "helpers.h": "c"
     }
 }
