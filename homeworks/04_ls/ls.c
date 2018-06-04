@@ -39,7 +39,7 @@ void print_full_info(struct stat file_stat) {
     print_file_permissions(file_stat.st_mode);
 
     char timestamp[20];
-    strftime(timestamp, 20, "%B %d %R", localtime(&file_stat.st_mtime));
+    strftime(timestamp, 20, "%b %e %R", localtime(&file_stat.st_mtime));
 
     printf(" %ld %s %s %ld %s", file_stat.st_nlink,
                                 get_owner_name(file_stat),
@@ -56,7 +56,7 @@ blkcnt_t get_total_blocks_size(struct dirent** name_list, int files_count, const
 
         char* full_path = join_paths(base_filename, current_name);
         struct stat current_file_stat;
-        stat(full_path, &current_file_stat);
+        lstat(full_path, &current_file_stat);
 
         free(full_path);
 
@@ -119,7 +119,7 @@ void process_directory(const char* filename, flags_t flags) {
 
             char* full_path = join_paths(filename, current_name);
             struct stat current_file_stat;
-            stat(full_path, &current_file_stat);
+            lstat(full_path, &current_file_stat);
 
             process_file(current_file_stat, current_name, flags);
 
@@ -183,7 +183,7 @@ void ls(int size, const char* filenames[size]) {
         } else {
             mode_t last_processed_mode;
 
-            if (stat(filename, &file_stat) == 0) {
+            if (lstat(filename, &file_stat) == 0) {
                 mode_t mode = file_stat.st_mode;
 
                 if (is_directory(mode)) {
