@@ -13,8 +13,8 @@ bool contains(const char* haystack, const char* needle) {
     return strstr(haystack, needle) != NULL;
 }
 
-bool is_flag(const char* filename) {
-    return filename[0] == '-' && strlen(filename) > 1;
+bool is_flag(const char* str) {
+    return str[0] == '-' && strlen(str) > 1;
 }
 
 bool is_hidden(const char* filename) {
